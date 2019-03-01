@@ -365,6 +365,12 @@ static void destroy(void* data)
 	g_free(data);
 }
 
+static bool apply_pipeline_clicked(obs_properties_t *props, obs_property_t *p, void *data)
+{
+	stop(data);
+	start(data);
+}
+
 static void get_defaults(obs_data_t* settings)
 {
 	obs_data_set_default_string(settings, "pipeline",
@@ -384,6 +390,9 @@ static obs_properties_t* get_properties(void* data)
 
 	obs_property_t* prop = obs_properties_add_text(props, "pipeline", "Pipeline", OBS_TEXT_MULTILINE);
 	obs_property_set_long_description(prop, "Use \"video\" and \"audio\" as names for the media sinks.");
+
+	obs_properties_add_button(props, "apply_pipeline", "Apply pipeline", apply_pipeline_clicked);
+
 	obs_properties_add_bool(props, "use_timestamps", "Use pipeline time stamps");
 	obs_properties_add_bool(props, "sync_appsinks", "Sync appsinks to clock");
 	obs_properties_add_bool(props, "restart_on_eos", "Try to restart when end of stream is reached");
@@ -396,16 +405,12 @@ static obs_properties_t* get_properties(void* data)
 
 static void update(void* data, obs_data_t* settings)
 {
-	stop(data);
-
+	//stop(data);
 	// Don't start the pipeline if source is hidden and 'stop_on_hide' is set.
 	// From GUI this is probably irrelevant but works around some quirks when
 	// controlled from script.
-	if (obs_data_get_bool(settings, "stop_on_hide") &&
-		!obs_source_showing(((data_t*)data)->source))
-		return;
-
-	start(data);
+	//if (obs_data_get_bool(settings, "stop_on_hide") && !obs_source_showing(((data_t*)data)->source))
+	//	return;
 }
 
 static void show(void* data)
